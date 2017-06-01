@@ -4,6 +4,7 @@ var Video = require('twilio-video');
 var getParameterByName = require('./utils').getParameterByName;
 var getEmoji = require('./emotion').getEmoji;
 var analyzeEmotion = require('./emotion').analyzeEmotion;
+var analyzeFace = require('./face').analyzeFace;
 var activeRoom;
 var previewTracks;
 var identity;
@@ -240,23 +241,24 @@ function doSnapshots() {
 
         if (data && data[0]) {
           var face = data[0].faceRectangle;
-          var emoji = getEmoji(data[0]);
+          var faceRect = data[0].faceLandmarks;
+          var emoji = getEmoji(data[0].faceAttributes.emotion);
 
           if (isJose) {
             $emotion.addClass('afro');
             $emotion.css({
-              width: face.width * 3,
-              height: face.width * 2,
-              top: face.top - 60,
-              left: face.left - 40
+              width: (faceRect.eyeRightTop.x - faceRect.eyeLeftTop.x) * 7,
+              height: face.width * 2.2,
+              top: faceRect.eyeLeftTop.y - 60,
+              left: faceRect.eyeLeftTop.x - 40
             });
           }
 
           if (isFaceEmoji) {
             $emotion.css({
-              fontSize: face.height * 1.6,
-              left: face.left + 10,
-              top: face.top
+              fontSize: faceRect.height * 1.6,
+              left: faceRect.left + 10,
+              top: faceRect.top
             });
           }
           $emotion.text(emoji);
@@ -288,10 +290,7 @@ function takeLocalVideoSnapshot(video, canvas) {
 function runAnalysis(video, canvas) {
   if (video) {
     var canvas = takeLocalVideoSnapshot(video, canvas);
-    return analyzeEmotion(canvas)
-      .then(function(data) {
-        return data;
-      });
+    return analyzeFace(canvas);
   }
 }
 
