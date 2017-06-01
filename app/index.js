@@ -11,6 +11,7 @@ var roomName;
 var isPresenter = getParameterByName('presenter');
 var isFaceEmoji = getParameterByName('easterEgg') === 'face';
 var isJose = getParameterByName('easterEgg') === 'jose';
+var isJoined = false;
 window.participants = {};
 
 
@@ -61,7 +62,10 @@ $.getJSON('/token', function(data) {
   document.getElementById('room-controls').style.display = 'block';
 
   // Bind button to join Room.
-  document.getElementById('button-join').onclick = function() {
+  document.getElementById('self-display').onclick = function() {
+    if (isJoined) {
+      return;
+    }
     roomName = `cs-spark`;
     log("Joining room '" + roomName + "'...");
     var connectOptions = {
@@ -96,7 +100,7 @@ function roomJoined(room) {
   document.getElementById('button-leave').style.display = 'inline';
 
   // Attach LocalParticipant's Tracks, if not already attached.
-  var previewContainer = document.getElementById('local-media');
+  var previewContainer = document.getElementById('self-display');
   if (!previewContainer.querySelector('video')) {
     attachParticipantTracks(room.localParticipant, previewContainer);
   }
@@ -167,14 +171,11 @@ function leaveRoomIfJoined() {
 }
 
 function addParticipantElement(participant) {
-  var previewContainer = document.getElementById('remote-media');
+  var participantsNumber = Object.keys(window.participants).length;
+  var previewContainer = document.getElementById(`display-${participantsNumber}`);
   var participantContainer = document.createElement("div");
   participantContainer.id = participant.sid;
   participantContainer.className = "participant";
-  var title = document.createElement("div");
-  title.className = "title";
-  title.innerHTML = `<p>${participant.identity}</p>`;
-  participantContainer.appendChild(title);
 
   var canvas = document.createElement("canvas");
   canvas.className = "snapshot";
@@ -278,6 +279,8 @@ function runAnalysis(video, canvas) {
       });
   }
 }
+
+
 
 
 

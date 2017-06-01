@@ -1,5 +1,53 @@
 @import url(https://fonts.googleapis.com/css?family=Share+Tech+Mono);
 
+body {
+  background-color: #000;
+  height: 100vh;
+  padding: 0;
+  margin: 0 5px;
+}
+
+.container {
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.row {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+  height: 32vh;
+  margin: 10px 0;
+}
+
+.video-hldr {
+  border: 1px solid #fff;
+  width: 100%;
+  height: 100%;
+  margin: 0 5px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video-hldr div {
+  display: flex;
+  justify-content: center;
+}
+
+.video-hldr video{
+  max-width: 99%;
+  height: 99%;
+  background-color: #000;
+}
+
+.video-hldr.logo {
+  background-image: url('logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
 body,
 p {
   padding: 0;
