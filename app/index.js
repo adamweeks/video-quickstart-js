@@ -151,11 +151,11 @@ function roomJoined(room) {
         track.stop();
       });
     }
-    detachParticipantTracks(room.localParticipant);
-    room.participants.forEach(detachParticipantTracks);
+    Object.keys(window.participants).forEach((participantId) => removeParticipant(window.participants[participantId].participant));
     activeRoom = null;
     document.getElementById('button-join').style.display = 'inline';
     document.getElementById('button-leave').style.display = 'none';
+
   });
 }
 
@@ -214,7 +214,7 @@ function analyzeEmotion(canvas) {
             xhrObj.setRequestHeader("Content-Type","application/octet-stream");
 
             // NOTE: Replace the "Ocp-Apim-Subscription-Key" value with a valid subscription  key.
-            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", 'c59e9dff61f2412caf8c3c0c271ca1c1');
+            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", process.env.EMOTION_API_KEY);
         },
         type: "POST",
         // Request body
