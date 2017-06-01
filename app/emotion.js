@@ -11,7 +11,7 @@ var EMOTIONS = {
 
 
 function getEmoji(emotions) {
-  var s = emotions.scores;
+  var s = emotions;
   var sortedEmotions = Object.keys(s).sort(function (a, b) {
     if (s[a] > s[b]) {
       return -1;
@@ -22,7 +22,7 @@ function getEmoji(emotions) {
     return 0;
   });
   var emotion = sortedEmotions[0];
-  if (emotion === `neutral` && emotions.scores[emotion] < 0.8) {
+  if (emotion === `neutral` && emotions[emotion] < 0.8) {
     emotion = sortedEmotions[1];
   }
   return EMOTIONS[emotion];

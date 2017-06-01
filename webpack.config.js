@@ -10,7 +10,8 @@ module.exports = {
       `TWILIO_ACCOUNT_SID`,
       `TWILIO_API_KEY`,
       `TWILIO_API_SECRET`,
-      `EMOTION_API_KEY`
+      `EMOTION_API_KEY`,
+      `FACE_API_KEY`
     ]),
     new HtmlWebpackPlugin({
       template: `./app/index.html`
