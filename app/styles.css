@@ -7,6 +7,10 @@ body {
   margin: 0 5px;
 }
 
+video {
+  object-fit: cover;
+}
+
 .container {
   flex-direction: column;
   flex-grow: 1;
@@ -34,12 +38,6 @@ body {
   display: flex;
   justify-content: center;
   position: relative;
-}
-
-.video-hldr video{
-  max-width: 99%;
-  height: 99%;
-  background-color: #000;
 }
 
 .video-hldr.logo {
