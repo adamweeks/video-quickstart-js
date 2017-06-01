@@ -199,24 +199,6 @@ function addParticipantElement(participant) {
 }
 
 
-
-function dataURItoBlob(dataURI) {
-    // convert base64/URLEncoded data component to raw binary data held in a string
-    var byteString;
-    if (dataURI.split(',')[0].indexOf('base64') >= 0)
-        byteString = atob(dataURI.split(',')[1]);
-    else
-        byteString = unescape(dataURI.split(',')[1]);
-    // separate out the mime component
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    // write the bytes of the string to a typed array
-    var ia = new Uint8Array(byteString.length);
-    for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ia], {type:mimeString});
-}
-
 function addParticipantToObject(participant, participantElement, canvasElement) {
   window.participants[participant.sid] = {
     participant,
@@ -242,21 +224,33 @@ function doSnapshots() {
     runAnalysis(video, canvas)
       .then(function(data) {
         var $emotion = $container.find('.emotion');
+        
         if (data && data[0]) {
+          var face = data[0].faceRectangle;
           var emoji = getEmoji(data[0]);
-          if (isFaceEmoji) {
-            var face = data[0].faceRectangle;
+
+          if (isJose) {
+            $emotion.addClass('afro');
             $emotion.css({
-              fontSize: face.height + 10,
-              left: face.left - 50,
-              top: face.top,
-              position: 'absolute'
+              width: face.width * 3,
+              height: face.width * 2,
+              top: face.top - 60,
+              left: face.left - 40
+            });
+          }
+
+          if (isFaceEmoji) {
+            $emotion.css({
+              fontSize: face.height * 1.6,
+              left: face.left + 10,
+              top: face.top
             });
           }
           $emotion.text(emoji);
         }
         else {
           $emotion.text('');
+          $emotion.removeClass('afro');
         }
         console.log(data[0]);
       });
@@ -295,6 +289,6 @@ function runAnalysis(video, canvas) {
 $(function() {
   if (isPresenter) {
     // Count number of active videos
-    window.setInterval(doSnapshots, 1000);
+    window.setInterval(doSnapshots, 2000);
   }
 });
