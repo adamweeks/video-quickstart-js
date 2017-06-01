@@ -1,10 +1,17 @@
 var path = require('path');
+var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: './app',
   plugins: [
+    new webpack.EnvironmentPlugin([
+      `TWILIO_ACCOUNT_SID`,
+      `TWILIO_API_KEY`,
+      `TWILIO_API_SECRET`,
+      `EMOTION_API_KEY`
+    ]),
     new HtmlWebpackPlugin({
       template: `./app/index.html`
     }),
