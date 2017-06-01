@@ -12,6 +12,7 @@ var roomName;
 var isPresenter = getParameterByName('presenter');
 var isFaceEmoji = getParameterByName('easterEgg') === 'face';
 var isJose = getParameterByName('easterEgg') === 'jose';
+var isSpin = getParameterByName('easterEgg') === 'spin';
 var isJoined = false;
 var spotsTaken = [
   false,
@@ -24,7 +25,6 @@ var spotsTaken = [
   false
 ];
 window.participants = {};
-
 
 // Attach the Tracks to the DOM.
 function attachTracks(tracks, container, participant, save) {
@@ -312,3 +312,7 @@ $(function() {
     window.setInterval(doSnapshots, 2000);
   }
 });
+
+if (isSpin) {
+  $('.video-hldr').addClass('spin');
+}
