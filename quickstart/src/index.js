@@ -98,32 +98,37 @@ function roomJoined(room) {
   // Attach the Tracks of the Room's Participants.
   room.participants.forEach(function(participant) {
     log("Already in Room: '" + participant.identity + "'");
-    var previewContainer = document.getElementById('remote-media');
-    attachParticipantTracks(participant, previewContainer);
+    var particpantElement = addParticipantElement(participant);
+    attachParticipantTracks(participant, addParticipantElement);
   });
 
   // When a Participant joins the Room, log the event.
   room.on('participantConnected', function(participant) {
     log("Joining: '" + participant.identity + "'");
+    var particpantElement = addParticipantElement(participant);
   });
 
   // When a Participant adds a Track, attach it to the DOM.
   room.on('trackAdded', function(track, participant) {
     log(participant.identity + " added track: " + track.kind);
-    var previewContainer = document.getElementById('remote-media');
-    attachTracks([track], previewContainer);
+    var participantContainer = document.getElementById(participant.sid);
+    attachTracks([track], participantContainer);
   });
 
   // When a Participant removes a Track, detach it from the DOM.
   room.on('trackRemoved', function(track, participant) {
     log(participant.identity + " removed track: " + track.kind);
     detachTracks([track]);
+    var trackContainer = document.getElementById(participant.sid);
+    trackContainer.parentNode.removeChild(trackContainer);
   });
 
   // When a Participant leaves the Room, detach its Tracks.
   room.on('participantDisconnected', function(participant) {
     log("Participant '" + participant.identity + "' left the room");
     detachParticipantTracks(participant);
+    var participantContainer = document.getElementById(participant.sid);
+    participantContainer.parentElement.removeChild(participantContainer);
   });
 
   // Once the LocalParticipant leaves the room, detach the Tracks
@@ -173,4 +178,17 @@ function leaveRoomIfJoined() {
   if (activeRoom) {
     activeRoom.disconnect();
   }
+}
+
+function addParticipantElement(participant) {
+  var previewContainer = document.getElementById('remote-media');
+  var participantContainer = document.createElement("div");
+  participantContainer.id = participant.sid;
+  participantContainer.className = "participant";
+  var title = document.createElement("div");
+  title.className = "title";
+  title.innerHTML = `<p>${participant.identity}</p>`;
+  participantContainer.appendChild(title)
+  previewContainer.appendChild(participantContainer);
+  return participantContainer;
 }
