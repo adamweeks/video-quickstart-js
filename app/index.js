@@ -2,7 +2,7 @@
 require('./styles.css');
 var Video = require('twilio-video');
 var getParameterByName = require('./utils').getParameterByName;
-
+var getEmoji = require('./emotion');
 var activeRoom;
 var previewTracks;
 var identity;
@@ -10,16 +10,6 @@ var roomName;
 var isPresenter = getParameterByName('presenter');
 window.participants = {};
 
-var EMOTIONS = {
-  anger: '😡',
-  contempt: '😒',
-  disgust: '🤢',
-  fear: '😱',
-  happiness: '😀',
-  neutral: '😐',
-  sadness: '😥',
-  surprise: '😲'
-};
 
 // Attach the Tracks to the DOM.
 function attachTracks(tracks, container, participant, save) {
@@ -280,23 +270,7 @@ function doSnapshots() {
   })
 }
 
-function getEmoji(emotions) {
-  var s = emotions.scores;
-  var sortedEmotions = Object.keys(s).sort(function(a, b) {
-      if (s[a] > s[b]) {
-        return -1;
-      }
-      if (s[a] < s[b]) {
-        return 1;
-      }
-      return 0;
-  });
-  var emotion = sortedEmotions[0];
-  if (emotion === `neutral` && emotions.scores[emotion] < 0.8) {
-    emotion = sortedEmotions[1];
-  }
-  return EMOTIONS[emotion];
-}
+
 
 /**
  * Take snapshot of the local video from the HTMLVideoElement and render it
