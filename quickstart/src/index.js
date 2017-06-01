@@ -6,11 +6,16 @@ var activeRoom;
 var previewTracks;
 var identity;
 var roomName;
+window.participants = {};
 
 // Attach the Tracks to the DOM.
-function attachTracks(tracks, container) {
+function attachTracks(tracks, container, participant, save) {
   tracks.forEach(function(track) {
-    container.appendChild(track.attach());
+    let videoElement = track.attach();
+    container.appendChild(videoElement);
+    if (save) {
+      window.participants[participant.sid].videoElement = videoElement;
+    }
   });
 }
 
@@ -51,12 +56,7 @@ $.getJSON('/token', function(data) {
 
   // Bind button to join Room.
   document.getElementById('button-join').onclick = function() {
-    roomName = document.getElementById('room-name').value;
-    if (!roomName) {
-      alert('Please enter a room name.');
-      return;
-    }
-
+    roomName = `cs-spark`;
     log("Joining room '" + roomName + "'...");
     var connectOptions = {
       name: roomName,
@@ -78,6 +78,11 @@ $.getJSON('/token', function(data) {
   document.getElementById('button-leave').onclick = function() {
     log('Leaving room...');
     activeRoom.disconnect();
+  };
+
+  document.getElementById('button-snapshot').onclick = function () {
+    log('Snapshotting room...');
+    doSnapshots();
   };
 });
 
@@ -112,7 +117,7 @@ function roomJoined(room) {
   room.on('trackAdded', function(track, participant) {
     log(participant.identity + " added track: " + track.kind);
     var participantContainer = document.getElementById(participant.sid);
-    attachTracks([track], participantContainer);
+    attachTracks([track], participantContainer, participant, track.kind === 'video');
   });
 
   // When a Participant removes a Track, detach it from the DOM.
@@ -126,9 +131,7 @@ function roomJoined(room) {
   // When a Participant leaves the Room, detach its Tracks.
   room.on('participantDisconnected', function(participant) {
     log("Participant '" + participant.identity + "' left the room");
-    detachParticipantTracks(participant);
-    var participantContainer = document.getElementById(participant.sid);
-    participantContainer.parentElement.removeChild(participantContainer);
+    removeParticipant(participant);
   });
 
   // Once the LocalParticipant leaves the room, detach the Tracks
@@ -190,11 +193,11 @@ function addParticipantElement(participant) {
   title.innerHTML = `<p>${participant.identity}</p>`;
   participantContainer.appendChild(title)
   previewContainer.appendChild(participantContainer);
+  addParticipantToObject(participant, participantContainer);
   return participantContainer;
 }
 
-
-function analyzeEmotion(canvas ) { 
+function analyzeEmotion(canvas ) {
     var params = {
         // Request parameters
     };
@@ -203,7 +206,7 @@ function analyzeEmotion(canvas ) {
     var file = dataURItoBlob(img);
     return $.ajax({
         // NOTE: You must use the same location in your REST call as you used to obtain your subscription keys.
-        //   For example, if you obtained your subscription keys from westcentralus, replace "westus" in the 
+        //   For example, if you obtained your subscription keys from westcentralus, replace "westus" in the
         //   URL below with "westcentralus".
         url: "https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize?" + $.param(params),
         contentType: 'application/octet-stream',
@@ -243,4 +246,26 @@ function dataURItoBlob(dataURI) {
         ia[i] = byteString.charCodeAt(i);
     }
     return new Blob([ia], {type:mimeString});
+}
+
+function addParticipantToObject(participant, particpantElement) {
+  window.participants[participant.sid] = {
+    participant,
+    particpantElement
+  };
+}
+
+function removeParticipant(participant) {
+  detachParticipantTracks(participant);
+  var participantContainer = document.getElementById(participant.sid);
+  participantContainer.parentElement.removeChild(participantContainer);
+  delete participants[participant.sid];
+}
+
+function doSnapshots() {
+  Object.keys(window.participants).forEach((participantId) => {
+    var participant = window.participants[participantId];
+    // TODO: convert participant.videoElement to canvas
+    //analyzeEmotion(participant.videoElement);
+  })
 }
