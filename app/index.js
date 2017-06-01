@@ -30,6 +30,7 @@ window.participants = {};
 function attachTracks(tracks, container, participant, save) {
   if (!container) { return }
   tracks.forEach(function(track) {
+    if (track.kind === 'audio') {return}
     let videoElement = track.attach();
     container.appendChild(videoElement);
     if (save) {
