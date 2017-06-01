@@ -12,13 +12,22 @@ var isPresenter = getParameterByName('presenter');
 var isFaceEmoji = getParameterByName('easterEgg') === 'face';
 var isJose = getParameterByName('easterEgg') === 'jose';
 var isJoined = false;
-var spotsFilled = 0;
-var maxParticipants = 8;
+var spotsTaken = [
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false
+];
 window.participants = {};
 
 
 // Attach the Tracks to the DOM.
 function attachTracks(tracks, container, participant, save) {
+  if (!container) { return }
   tracks.forEach(function(track) {
     let videoElement = track.attach();
     container.appendChild(videoElement);
@@ -176,10 +185,11 @@ function leaveRoomIfJoined() {
 }
 
 function addParticipantElement(participant) {
-  if (spotsFilled >= maxParticipants) {
-    return null;
+  var nextSpot = getNextSpot();
+  if (nextSpot === -1) {
+    return false;
   }
-  var previewContainer = document.getElementById(`display-${spotsFilled}`);
+  var previewContainer = document.getElementById(`display-${nextSpot}`);
   var participantContainer = document.createElement("div");
   participantContainer.id = participant.sid;
   participantContainer.className = "participant";
@@ -193,17 +203,18 @@ function addParticipantElement(participant) {
   participantContainer.appendChild(emotion);
 
   previewContainer.appendChild(participantContainer);
-  addParticipantToObject(participant, participantContainer, canvas);
-  spotsFilled++;
+  addParticipantToObject(participant, participantContainer, canvas, nextSpot);
+  spotsTaken[nextSpot] = true;
   return participantContainer;
 }
 
 
-function addParticipantToObject(participant, participantElement, canvasElement) {
+function addParticipantToObject(participant, participantElement, canvasElement, spot) {
   window.participants[participant.sid] = {
     participant,
     participantElement,
-    canvasElement
+    canvasElement,
+    spot
   };
 }
 
@@ -211,6 +222,8 @@ function removeParticipant(participant) {
   detachParticipantTracks(participant);
   var participantContainer = document.getElementById(participant.sid);
   participantContainer.parentElement.removeChild(participantContainer);
+  var parObject = participants[participant.sid];
+  freeSpot(parObject.spot);
   delete participants[participant.sid];
 }
 
@@ -224,7 +237,7 @@ function doSnapshots() {
     runAnalysis(video, canvas)
       .then(function(data) {
         var $emotion = $container.find('.emotion');
-        
+
         if (data && data[0]) {
           var face = data[0].faceRectangle;
           var emoji = getEmoji(data[0]);
@@ -282,7 +295,13 @@ function runAnalysis(video, canvas) {
   }
 }
 
+function getNextSpot() {
+  return spotsTaken.indexOf(false);
+}
 
+function freeSpot(spotNumber) {
+  spotsTaken[spotNumber] = false;
+}
 
 
 
