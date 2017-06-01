@@ -29,6 +29,12 @@ module.exports = {
         use: ExtractTextPlugin.extract({
           use: "css-loader"
         })
+      },
+      {
+        test: /.*\.(gif|png|jpg)$/,
+        use: [
+          `file-loader?name=[name].[ext]`
+        ]
       }
     ]
   },
