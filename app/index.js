@@ -12,6 +12,8 @@ var isPresenter = getParameterByName('presenter');
 var isFaceEmoji = getParameterByName('easterEgg') === 'face';
 var isJose = getParameterByName('easterEgg') === 'jose';
 var isJoined = false;
+var spotsFilled = 0;
+var maxParticipants = 8;
 window.participants = {};
 
 
@@ -66,6 +68,7 @@ $.getJSON('/token', function(data) {
     if (isJoined) {
       return;
     }
+    isJoined = true;
     roomName = `cs-spark`;
     log("Joining room '" + roomName + "'...");
     var connectOptions = {
@@ -109,7 +112,9 @@ function roomJoined(room) {
   room.participants.forEach(function(participant) {
     log("Already in Room: '" + participant.identity + "'");
     var participantElement = addParticipantElement(participant);
-    attachParticipantTracks(participant, participantElement);
+    if (participantElement) {
+      attachParticipantTracks(participant, participantElement);
+    }
   });
 
   // When a Participant joins the Room, log the event.
@@ -171,8 +176,10 @@ function leaveRoomIfJoined() {
 }
 
 function addParticipantElement(participant) {
-  var participantsNumber = Object.keys(window.participants).length;
-  var previewContainer = document.getElementById(`display-${participantsNumber}`);
+  if (spotsFilled >= maxParticipants) {
+    return null;
+  }
+  var previewContainer = document.getElementById(`display-${spotsFilled}`);
   var participantContainer = document.createElement("div");
   participantContainer.id = participant.sid;
   participantContainer.className = "participant";
@@ -187,6 +194,7 @@ function addParticipantElement(participant) {
 
   previewContainer.appendChild(participantContainer);
   addParticipantToObject(participant, participantContainer, canvas);
+  spotsFilled++;
   return participantContainer;
 }
 
