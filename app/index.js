@@ -2,12 +2,15 @@
 require('./styles.css');
 var Video = require('twilio-video');
 var getParameterByName = require('./utils').getParameterByName;
-var getEmoji = require('./emotion');
+var getEmoji = require('./emotion').getEmoji;
+var analyzeEmotion = require('./emotion').analyzeEmotion;
 var activeRoom;
 var previewTracks;
 var identity;
 var roomName;
 var isPresenter = getParameterByName('presenter');
+var isFaceEmoji = getParameterByName('easterEgg') === 'face';
+var isJose = getParameterByName('easterEgg') === 'jose';
 window.participants = {};
 
 
@@ -186,38 +189,6 @@ function addParticipantElement(participant) {
   return participantContainer;
 }
 
-function analyzeEmotion(canvas) {
-    var params = {
-        // Request parameters
-    };
-    var img = canvas.toDataURL();
-    // Convert Base64 image to binary
-    var file = dataURItoBlob(img);
-    return $.ajax({
-        // NOTE: You must use the same location in your REST call as you used to obtain your subscription keys.
-        //   For example, if you obtained your subscription keys from westcentralus, replace "westus" in the
-        //   URL below with "westcentralus".
-        url: "https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize?" + $.param(params),
-        contentType: 'application/octet-stream',
-        beforeSend: function(xhrObj){
-            // Request headers
-            xhrObj.setRequestHeader("Content-Type","application/octet-stream");
-
-            // NOTE: Replace the "Ocp-Apim-Subscription-Key" value with a valid subscription  key.
-            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", process.env.EMOTION_API_KEY);
-        },
-        type: "POST",
-        // Request body
-        data: file,
-        processData: false
-    })
-    .done(function(data) {
-        return Promise.resolve(data);
-    })
-    .fail(function(err) {
-        console.error("Emotion API Error", err);
-    });
-}
 
 
 function dataURItoBlob(dataURI) {
@@ -263,7 +234,20 @@ function doSnapshots() {
       .then(function(data) {
         var $emotion = $container.find('.emotion');
         if (data && data[0]) {
-          $emotion.text(getEmoji(data[0]));
+          var emoji = getEmoji(data[0]);
+          if (isFaceEmoji) {
+            var face = data[0].faceRectangle;
+            $emotion.css({
+              fontSize: face.height + 10,
+              left: face.left - 50,
+              top: face.top,
+              position: 'absolute'
+            });
+          }
+          $emotion.text(emoji);
+        }
+        else {
+          $emotion.text('');
         }
         console.log(data[0]);
       });

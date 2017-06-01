@@ -24,6 +24,7 @@ div#remote-media .participant {
   border: 1px solid #272726;
   width: 25%;
   overflow: hidden;
+  position: relative;
 }
 
 div#remote-media video {
