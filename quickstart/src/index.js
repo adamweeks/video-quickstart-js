@@ -103,14 +103,14 @@ function roomJoined(room) {
   // Attach the Tracks of the Room's Participants.
   room.participants.forEach(function(participant) {
     log("Already in Room: '" + participant.identity + "'");
-    var particpantElement = addParticipantElement(participant);
+    addParticipantElement(participant);
     attachParticipantTracks(participant, addParticipantElement);
   });
 
   // When a Participant joins the Room, log the event.
   room.on('participantConnected', function(participant) {
     log("Joining: '" + participant.identity + "'");
-    var particpantElement = addParticipantElement(participant);
+    addParticipantElement(participant);
   });
 
   // When a Participant adds a Track, attach it to the DOM.
@@ -248,10 +248,10 @@ function dataURItoBlob(dataURI) {
     return new Blob([ia], {type:mimeString});
 }
 
-function addParticipantToObject(participant, particpantElement) {
+function addParticipantToObject(participant, participantElement) {
   window.participants[participant.sid] = {
     participant,
-    particpantElement
+    participantElement
   };
 }
 
