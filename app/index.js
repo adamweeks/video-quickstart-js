@@ -254,7 +254,7 @@ function doSnapshots() {
           var faceL = data[0].faceLandmarks;
           var emotion = data[0].faceAttributes.emotion;
           var emoji = getEmoji(data[0].faceAttributes.emotion);
-          if (emotion === `sadness` || emotion === `angry`) {
+          if (emoji === `sadness` || emoji === `anger`) {
             verySad = verySad + 1;
           }
 
