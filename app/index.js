@@ -314,3 +314,7 @@ $(function() {
 if (isSpin) {
   $('.video-hldr').addClass('spin');
 }
+
+if (!isPresenter) {
+  $('#eggs').remove();
+}

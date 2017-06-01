@@ -12,7 +12,7 @@ function analyzeFace(canvas) {
         "returnFaceLandmarks": true,
         "returnFaceAttributes": "emotion",
     };
-  
+
     return $.ajax({
         url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
         contentType: 'application/octet-stream',
@@ -29,7 +29,7 @@ function analyzeFace(canvas) {
     .done(function(data) {
         return Promise.resolve(data);
     })
-    .fail(function() {
+    .fail(function(err) {
         console.error("Face API Error", err);
     });
 }
