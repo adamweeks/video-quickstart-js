@@ -1,10 +1,13 @@
 'use strict';
 require('./styles.css');
 var Video = require('twilio-video');
+var getParameterByName = require('./utils').getParameterByName;
+
 var activeRoom;
 var previewTracks;
 var identity;
 var roomName;
+var isPresenter = getParameterByName('presenter');
 window.participants = {};
 
 var EMOTIONS = {
@@ -89,11 +92,6 @@ $.getJSON('/token', function(data) {
     log('Leaving room...');
     activeRoom.disconnect();
   };
-
-  document.getElementById('button-snapshot').onclick = function () {
-    log('Snapshotting room...');
-    doSnapshots();
-  };
 });
 
 // Successfully connected!
@@ -161,24 +159,6 @@ function roomJoined(room) {
   });
 }
 
-// Preview LocalParticipant's Tracks.
-document.getElementById('button-preview').onclick = function() {
-  var localTracksPromise = previewTracks
-    ? Promise.resolve(previewTracks)
-    : Video.createLocalTracks();
-
-  localTracksPromise.then(function(tracks) {
-    window.previewTracks = previewTracks = tracks;
-    var previewContainer = document.getElementById('local-media');
-    if (!previewContainer.querySelector('video')) {
-      attachTracks(tracks, previewContainer);
-    }
-  }, function(error) {
-    console.error('Unable to access local media', error);
-    log('Unable to access Camera and Microphone');
-  });
-};
-
 // Activity log.
 function log(message) {
   var logDiv = document.getElementById('log');
@@ -216,7 +196,7 @@ function addParticipantElement(participant) {
   return participantContainer;
 }
 
-function analyzeEmotion(canvas) { 
+function analyzeEmotion(canvas) {
     var params = {
         // Request parameters
     };
@@ -331,6 +311,8 @@ function runAnalysis(video, canvas) {
 
 
 $(function() {
-  // Count number of active videos
-  window.setInterval(doSnapshots, 1000);
+  if (isPresenter) {
+    // Count number of active videos
+    window.setInterval(doSnapshots, 1000);
+  }
 });
