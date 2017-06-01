@@ -30,9 +30,10 @@ body {
   overflow: hidden;
 }
 
-.video-hldr div {
+.video-hldr>div {
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .video-hldr video{
@@ -46,6 +47,13 @@ body {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: 50% 50%;
+}
+
+.emotion {
+  font-size: 70px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 body,
@@ -200,8 +208,4 @@ div#controls div#log p {
 
 .snapshot {
   display: none;
-}
-
-.emotion {
-  font-size: 70px;
 }
