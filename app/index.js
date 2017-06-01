@@ -228,8 +228,17 @@ function removeParticipant(participant) {
   delete participants[participant.sid];
 }
 
+function sumEmotions(current, newE) {
+  var output = {};
+  Object.keys(newE).forEach((e) => {
+    output[e] = current[e] + newE[e];
+  });
+  return output;
+}
+
 function doSnapshots() {
   var allEmotions = "anger contempt disgust fear happiness neutral sadness surprise";
+  var verySad = 0;
   Object.keys(window.participants).forEach((participantId) => {
     var participant = window.participants[participantId];
     // TODO: convert participant.videoElement to canvas
@@ -243,7 +252,11 @@ function doSnapshots() {
         if (data && data[0]) {
           var face = data[0].faceRectangle;
           var faceL = data[0].faceLandmarks;
+          var emotion = data[0].faceAttributes.emotion;
           var emoji = getEmoji(data[0].faceAttributes.emotion);
+          if (emotion === `sadness` || emotion === `angry`) {
+            verySad = verySad + 1;
+          }
 
           if (isJose) {
             $emotion.addClass('afro');
@@ -271,7 +284,13 @@ function doSnapshots() {
         }
         console.log(data[0]);
       });
-  })
+  });
+  if (verySad > 0) {
+    $('.logo').addClass('sad');
+  } else {
+    $('.logo').removeClass('sad');
+  }
+
 }
 
 

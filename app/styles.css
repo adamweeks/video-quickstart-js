@@ -224,21 +224,21 @@ div#controls div#log p {
   background-image: url('afro.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 .emotion.anger {
   background-image: url('anger.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 .emotion.contempt {
   background-image: url('contempt.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 
@@ -246,7 +246,7 @@ div#controls div#log p {
   background-image: url('disgust.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 
@@ -254,7 +254,7 @@ div#controls div#log p {
   background-image: url('fear.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 
@@ -262,7 +262,7 @@ div#controls div#log p {
   background-image: url('happiness.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 
@@ -270,7 +270,7 @@ div#controls div#log p {
   background-image: url('neutral.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 
@@ -278,7 +278,7 @@ div#controls div#log p {
   background-image: url('sadness.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 
@@ -286,15 +286,15 @@ div#controls div#log p {
   background-image: url('surprise.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
+  color: transparent;
 }
 
 .emotion.tiger {
   background-image: url('tiger.png');
   background-size: contain;
   background-repeat: no-repeat;
-  color: transparent
-
+  color: transparent;
+}
 .spin {
   -webkit-animation-name: spin;
   -webkit-animation-duration: 2000ms;
@@ -326,4 +326,15 @@ div#controls div#log p {
 @keyframes spin {
     from {transform:rotate(0deg);}
     to {transform:rotate(360deg);}
+}
+
+.sad {
+    background-image: url('cat.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    color: transparent;
+}
+
+.sad > * {
+  display: none;
 }
