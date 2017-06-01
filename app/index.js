@@ -301,7 +301,20 @@ function doSnapshots() {
 }
 
 function getEmoji(emotions) {
-  var emotion = Object.keys(emotions.scores).reduce(function(a, b){ return emotions.scores[a] > emotions.scores[b] ? a : b });
+  var s = emotions.scores;
+  var sortedEmotions = Object.keys(s).sort(function(a, b) {
+      if (s[a] > s[b]) {
+        return -1;
+      }
+      if (s[a] < s[b]) {
+        return 1;
+      }
+      return 0;
+  });
+  var emotion = sortedEmotions[0];
+  if (emotion === `neutral` && emotions.scores[emotion] < 0.8) {
+    emotion = sortedEmotions[1];
+  }
   return EMOTIONS[emotion];
 }
 
