@@ -207,3 +207,15 @@ div#controls div#log p {
 .snapshot {
   display: none;
 }
+
+.emotion {
+  font-size: 40px;
+  position: absolute;
+}
+
+.emotion.afro {
+  background-image: url('afro.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: transparent
+}
