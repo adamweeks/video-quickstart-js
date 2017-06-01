@@ -1,15 +1,3 @@
-var EMOTIONS = {
-  anger: '😡',
-  contempt: '😒',
-  disgust: '🤢',
-  fear: '😱',
-  happiness: '😀',
-  neutral: '😐',
-  sadness: '😥',
-  surprise: '😲'
-};
-
-
 function getEmoji(emotions) {
   var s = emotions;
   var sortedEmotions = Object.keys(s).sort(function (a, b) {
@@ -25,7 +13,7 @@ function getEmoji(emotions) {
   if (emotion === `neutral` && emotions[emotion] < 0.8) {
     emotion = sortedEmotions[1];
   }
-  return EMOTIONS[emotion];
+  return emotion;
 }
 
 function analyzeEmotion(canvas) {
@@ -82,6 +70,5 @@ function dataURItoBlob(dataURI) {
 
 module.exports = {
   analyzeEmotion: analyzeEmotion,
-  getEmoji: getEmoji,
-  EMOTIONS: EMOTIONS
+  getEmoji: getEmoji
 };

@@ -229,6 +229,7 @@ function removeParticipant(participant) {
 }
 
 function doSnapshots() {
+  var allEmotions = "anger contempt disgust fear happiness neutral sadness surprise";
   Object.keys(window.participants).forEach((participantId) => {
     var participant = window.participants[participantId];
     // TODO: convert participant.videoElement to canvas
@@ -241,27 +242,28 @@ function doSnapshots() {
 
         if (data && data[0]) {
           var face = data[0].faceRectangle;
-          var faceRect = data[0].faceLandmarks;
+          var faceL = data[0].faceLandmarks;
           var emoji = getEmoji(data[0].faceAttributes.emotion);
 
           if (isJose) {
             $emotion.addClass('afro');
             $emotion.css({
-              width: (faceRect.eyeRightTop.x - faceRect.eyeLeftTop.x) * 7,
+              width: (faceL.eyeRightTop.x - faceL.eyeLeftTop.x) * 7,
               height: face.width * 2.2,
-              top: faceRect.eyeLeftTop.y - 60,
-              left: faceRect.eyeLeftTop.x - 40
+              top: faceL.eyeLeftTop.y - 60,
+              left: faceL.eyeLeftTop.x - 40
             });
           }
 
           if (isFaceEmoji) {
             $emotion.css({
-              fontSize: faceRect.height * 1.6,
-              left: faceRect.left + 10,
-              top: faceRect.top
+              height: face.height * 2.5,
+              width: face.width * 3,
+              left: face.left + 10,
+              top: face.top + 20
             });
           }
-          $emotion.text(emoji);
+          $emotion.removeClass(allEmotions).addClass(emoji);
         }
         else {
           $emotion.text('');
