@@ -7,6 +7,17 @@ var identity;
 var roomName;
 window.participants = {};
 
+var EMOTIONS = {
+  anger: '😡',
+  contempt: '😒',
+  disgust: '🤢',
+  fear: '😱',
+  happiness: '😀',
+  neutral: '😐',
+  sadness: '😥',
+  surprise: '😲'
+};
+
 // Attach the Tracks to the DOM.
 function attachTracks(tracks, container, participant, save) {
   tracks.forEach(function(track) {
@@ -102,14 +113,14 @@ function roomJoined(room) {
   // Attach the Tracks of the Room's Participants.
   room.participants.forEach(function(participant) {
     log("Already in Room: '" + participant.identity + "'");
-    var particpantElement = addParticipantElement(participant);
-    attachParticipantTracks(participant, addParticipantElement);
+    var participantElement = addParticipantElement(participant);
+    attachParticipantTracks(participant, participantElement);
   });
 
   // When a Participant joins the Room, log the event.
   room.on('participantConnected', function(participant) {
     log("Joining: '" + participant.identity + "'");
-    var particpantElement = addParticipantElement(participant);
+    var participantElement = addParticipantElement(participant);
   });
 
   // When a Participant adds a Track, attach it to the DOM.
@@ -190,13 +201,22 @@ function addParticipantElement(participant) {
   var title = document.createElement("div");
   title.className = "title";
   title.innerHTML = `<p>${participant.identity}</p>`;
-  participantContainer.appendChild(title)
+  participantContainer.appendChild(title);
+
+  var canvas = document.createElement("canvas");
+  canvas.className = "snapshot";
+  participantContainer.appendChild(canvas);
+
+  var emotion = document.createElement("div");
+  emotion.className = "emotion";
+  participantContainer.appendChild(emotion);
+
   previewContainer.appendChild(participantContainer);
-  addParticipantToObject(participant, participantContainer);
+  addParticipantToObject(participant, participantContainer, canvas);
   return participantContainer;
 }
 
-function analyzeEmotion(canvas ) {
+function analyzeEmotion(canvas) { 
     var params = {
         // Request parameters
     };
@@ -214,7 +234,7 @@ function analyzeEmotion(canvas ) {
             xhrObj.setRequestHeader("Content-Type","application/octet-stream");
 
             // NOTE: Replace the "Ocp-Apim-Subscription-Key" value with a valid subscription  key.
-            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key",process.env.EMOTION_API_KEY);
+            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", 'c59e9dff61f2412caf8c3c0c271ca1c1');
         },
         type: "POST",
         // Request body
@@ -222,10 +242,10 @@ function analyzeEmotion(canvas ) {
         processData: false
     })
     .done(function(data) {
-        alert("success");
+        return Promise.resolve(data);
     })
-    .fail(function() {
-        alert("error");
+    .fail(function(err) {
+        console.error("Emotion API Error", err);
     });
 }
 
@@ -247,10 +267,11 @@ function dataURItoBlob(dataURI) {
     return new Blob([ia], {type:mimeString});
 }
 
-function addParticipantToObject(participant, particpantElement) {
+function addParticipantToObject(participant, participantElement, canvasElement) {
   window.participants[participant.sid] = {
     participant,
-    particpantElement
+    participantElement,
+    canvasElement
   };
 }
 
@@ -265,6 +286,51 @@ function doSnapshots() {
   Object.keys(window.participants).forEach((participantId) => {
     var participant = window.participants[participantId];
     // TODO: convert participant.videoElement to canvas
-    //analyzeEmotion(participant.videoElement);
+    var $container = $(participant.participantElement);
+    var video = $container.find('video')[0];
+    var canvas = takeLocalVideoSnapshot(video, participant.canvasElement);
+    runAnalysis(video, canvas)
+      .then(function(data) {
+        var $emotion = $container.find('.emotion');
+        if (data && data[0]) {
+          $emotion.text(getEmoji(data[0]));
+        }
+        console.log(data[0]);
+      });
   })
 }
+
+function getEmoji(emotions) {
+  var emotion = Object.keys(emotions.scores).reduce(function(a, b){ return emotions.scores[a] > emotions.scores[b] ? a : b });
+  return EMOTIONS[emotion];
+}
+
+/**
+ * Take snapshot of the local video from the HTMLVideoElement and render it
+ * in the HTMLCanvasElement.
+ * @param {HTMLVideoElement} video
+ * @param {HTMLCanvasElement} canvas
+ */
+function takeLocalVideoSnapshot(video, canvas) {
+  var context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  return canvas;
+}
+
+function runAnalysis(video, canvas) {
+  if (video) {
+    var canvas = takeLocalVideoSnapshot(video, canvas);
+    return analyzeEmotion(canvas)
+      .then(function(data) {
+        return data;
+      });
+  }
+}
+
+
+
+$(function() {
+  // Count number of active videos
+  window.setInterval(doSnapshots, 1000);
+});

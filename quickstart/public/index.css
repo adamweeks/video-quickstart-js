@@ -147,3 +147,11 @@ div#controls div#log p {
   text-indent: -1.25em;
   width: 90%;
 }
+
+.snapshot {
+  display: none;
+}
+
+.emotion {
+  font-size: 70px;
+}
