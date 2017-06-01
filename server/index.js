@@ -17,28 +17,17 @@ var VideoGrant = AccessToken.VideoGrant;
 var express = require('express');
 var randomName = require('./randomname');
 
+var webpackDevMiddleware = require("webpack-dev-middleware");
+var webpack = require("webpack");
+var webpackConfig = require("../webpack.config");
+
 // Create Express webapp.
 var app = express();
+var compiler = webpack(webpackConfig);
 
-// Set up the paths for the examples.
-[
-  'mediadevices',
-  'localvideosnapshot'
-].forEach(function(example) {
-  var examplePath = path.join(__dirname, `../examples/${example}/public`);
-  app.use(`/${example}`, express.static(examplePath));
-});
-
-// Set up the path for the quickstart.
-var quickstartPath = path.join(__dirname, '../quickstart/public');
-app.use('/quickstart', express.static(quickstartPath));
-
-/**
- * Default to the Quick Start application.
- */
-app.get('/', function(request, response) {
-  response.redirect('/quickstart');
-});
+app.use(webpackDevMiddleware(compiler, {
+  publicPath: "/" // Same as `output.publicPath` in most cases.
+}));
 
 /**
  * Generate an Access Token for a chat application user - it generates a random

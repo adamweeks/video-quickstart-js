@@ -14,8 +14,7 @@
     "build:examples:mediadevices": "copyfiles -f examples/mediadevices/src/helpers.js examples/mediadevices/public && browserify examples/mediadevices/src/index.js > examples/mediadevices/public/index.js",
     "build:examples:localvideosnapshot": "copyfiles -f examples/localvideosnapshot/src/helpers.js examples/localvideosnapshot/public && browserify examples/localvideosnapshot/src/index.js > examples/localvideosnapshot/public/index.js",
     "build:quickstart": "browserify quickstart/src/index.js > quickstart/public/index.js",
-    "start": "npm run clean && npm run build && node server",
-    "start:dev": "watch 'npm run build:quickstart' ./quickstart/src & node server"
+    "start": "node server"
   },
   "repository": {
     "type": "git",
@@ -46,7 +45,14 @@
   "devDependencies": {
     "browserify": "^14.3.0",
     "copyfiles": "^1.2.0",
+    "css-loader": "^0.28.4",
+    "express": "^4.15.3",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "html-webpack-plugin": "^2.28.0",
     "rimraf": "^2.6.1",
-    "watch": "^1.0.2"
+    "watch": "^1.0.2",
+    "webpack": "^2.6.1",
+    "webpack-dev-middleware": "^1.10.2",
+    "webpack-dev-server": "^2.4.5"
   }
 }
